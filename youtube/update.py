@@ -156,6 +156,8 @@ def dispute_claim():
     session._dispute_claim(
         session_data, claim_id, video_id, justification, os.getenv("LEGAL_NAME")
     )
+    response = query("UPDATE Claims SET Claimed=? WHERE Id=?", [1, video_id])
+    _log.debug(response, query="update claimed")
     url = _webhooks.get("claim_disputed")
     if url:
         embed = DiscordEmbed(

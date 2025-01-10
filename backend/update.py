@@ -48,6 +48,8 @@ def _discord_fields_from_video(video_id: str, video_title: str, claim_info: list
 
 def watch_claim_ids():
     session, session_data = get_yt_session()
+    if session is None:
+        return
     claims = session._get_claimed_videos(session_data)
     _log.info(f"Found {len(claims)} claims")
     for chunk in itertools.batched(claims, 50):
@@ -64,6 +66,8 @@ def watch_claim_ids():
 
 def fetch_claim_info():
     session, session_data = get_yt_session()
+    if session is None:
+        return
     response = query("SELECT Id, Title FROM Claims WHERE Claim IS NULL LIMIT 1")
     _log.debug(response, query="select null claim")
     if not (response and response[0].results):
@@ -148,6 +152,8 @@ def dispute_claim():
     claim_id = claim[0][0]["claimId"]
     justification = f"This is a fake claim. The real song is '{video_title}'"
     session, session_data = get_yt_session()
+    if session is None:
+        return
     session._dispute_claim(
         session_data, claim_id, video_id, justification, os.getenv("LEGAL_NAME")
     )

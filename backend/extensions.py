@@ -6,7 +6,7 @@ import requests
 import structlog
 from cloudflare import Cloudflare
 from dotenv import load_dotenv
-from youtube_up import YTUploaderSession
+from youtube_up import YTUploaderSession, YTUploaderException
 
 load_dotenv()
 log = structlog.get_logger()
@@ -111,5 +111,8 @@ def get_yt_session() -> tuple[YTUploaderSession, dict]:
         pass
 
     _session = YTUploaderSession(APIFileCookieJar())
-    _session_data = _session._get_session_data()
+    try:
+        _session_data = _session._get_session_data()
+    except YTUploaderException:
+        return None, None
     return _session, _session_data

@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS "Claims" ( "Id" CHAR(11) PRIMARY KEY, "Title" TEXT, "Fake" BOOLEAN, "Claimed" BOOLEAN DEFAULT 0, "Score" INTEGER, "Claim" TEXT);

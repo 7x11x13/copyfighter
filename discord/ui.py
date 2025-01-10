@@ -21,6 +21,9 @@ def _get_claim_title(claim: dict):
     elif "composition" in metadata:
         data = metadata["composition"]
         return f"{', '.join(data.get('writers', ['Unknown']))} - {data['title']}"
+    elif "movie" in metadata:
+        data = metadata["movie"]
+        return f"Movie: {data['title']}"
     else:
         raise ValueError(f"Unknown asset metadata: {metadata}")
 

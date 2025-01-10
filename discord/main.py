@@ -54,10 +54,10 @@ async def on_raw_reaction_add(event: disnake.RawReactionActionEvent):
     video_id = find_video_id(msg.embeds[0])
     response = query(
         "UPDATE Claims SET Fake=? WHERE Id=?",
-        params=[fake, video_id],
+        params=[int(fake), video_id],
     )
     clear_videos_cache()
-    log.info(f"Update {video_id}: Fake={fake}, response: {response}")
+    log.info(f"Update {video_id}: Fake={int(fake)}, response: {response}")
 
 
 def check_admin(inter: ACI):
@@ -106,9 +106,9 @@ async def mark_claims(inter: ACI, fake: bool, start: int, end: int = None):
 
     response = query(
         f"UPDATE Claims SET Fake=? WHERE Id IN ({', '.join(['?'] * len(video_ids))})",
-        params=[fake, *video_ids],
+        params=[int(fake), *video_ids],
     )
-    log.info(f"Marked videos Fake={fake}: {video_ids}, response: {response}")
+    log.info(f"Marked videos Fake={int(fake)}: {video_ids}, response: {response}")
     clear_videos_cache()
     await inter.send("Success!")
 

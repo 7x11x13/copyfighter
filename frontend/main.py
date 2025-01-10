@@ -104,7 +104,7 @@ async def mark_claims(inter: ACI, fake: bool, start: int, end: int = None):
 
     video_ids = [video["Id"] for video in videos_cache[start:end]]
 
-    for batch in itertools.batched(video_ids):
+    for batch in itertools.batched(video_ids, 99):
         response = query(
             f"UPDATE Claims SET Fake=? WHERE Id IN ({', '.join(['?'] * len(batch))})",
             params=[int(fake), *batch],

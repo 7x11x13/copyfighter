@@ -1,3 +1,4 @@
+import itertools
 import logging
 import os
 import re
@@ -56,7 +57,6 @@ async def on_raw_reaction_add(event: disnake.RawReactionActionEvent):
         "UPDATE Claims SET Fake=? WHERE Id=?",
         params=[int(fake), video_id],
     )
-    clear_videos_cache()
     log.info(f"Update {video_id}: Fake={int(fake)}, response: {response}")
 
 
@@ -76,7 +76,7 @@ def clear_videos_cache():
     name="claim_queue", description="View unclassified copyright claims"
 )
 @commands.check(check_admin)
-async def claim_queue(inter: ACI, clear_cache: bool = False):
+async def claim_queue(inter: ACI, clear_cache: bool = True):
     global videos_cache
     if clear_cache:
         clear_videos_cache()
@@ -104,12 +104,12 @@ async def mark_claims(inter: ACI, fake: bool, start: int, end: int = None):
 
     video_ids = [video["Id"] for video in videos_cache[start:end]]
 
-    response = query(
-        f"UPDATE Claims SET Fake=? WHERE Id IN ({', '.join(['?'] * len(video_ids))})",
-        params=[int(fake), *video_ids],
-    )
-    log.info(f"Marked videos Fake={int(fake)}: {video_ids}, response: {response}")
-    clear_videos_cache()
+    for batch in itertools.batched(video_ids):
+        response = query(
+            f"UPDATE Claims SET Fake=? WHERE Id IN ({', '.join(['?'] * len(batch))})",
+            params=[int(fake), *batch],
+        )
+        log.info(f"Marked videos Fake={int(fake)}: {batch}, response: {response}")
     await inter.send("Success!")
 
 

@@ -113,6 +113,15 @@ async def mark_claims(inter: ACI, fake: bool, start: int, end: int = None):
     await inter.send("Success!")
 
 
+@client.event
+async def on_slash_command_error(inter: ACI, error: commands.CommandError):
+    if isinstance(error, commands.CheckFailure):
+        await inter.send("Missing permissions", ephemeral=True)
+        return
+    await inter.send("Internal bot error")
+    logging.exception(error)
+
+
 def main():
     token = os.getenv("BOT_TOKEN")
     client.run(token)

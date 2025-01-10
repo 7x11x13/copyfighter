@@ -46,16 +46,11 @@ def _discord_fields_from_video(video_id: str, video_title: str, claim_info: list
     ]
 
 
-def _chunked(iterator: Iterator, n: int) -> Iterator[list]:
-    while chunk := list(itertools.islice(iterator, n)):
-        yield chunk
-
-
 def watch_claim_ids():
     session, session_data = get_yt_session()
     claims = session._get_claimed_videos(session_data)
     _log.info(f"Found {len(claims)} claims")
-    for chunk in _chunked(iter(claims), 50):
+    for chunk in itertools.batched(claims, 50):
         response = query(
             f"INSERT OR IGNORE INTO Claims (Id, Title) VALUES {', '.join(['(?, ?)'] * len(chunk))}",
             params=list(
